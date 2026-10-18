@@ -28,7 +28,7 @@
 .glitch{animation:glx .45s steps(2) 1}
 .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,24px);background:var(--red);color:#090909;padding:12px 20px;font-size:12px;letter-spacing:.06em;z-index:200;opacity:0;pointer-events:none;transition:.25s;border:1px solid #000;box-shadow:6px 6px 0 #ffffff22;max-width:90vw;text-align:center}.toast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:800px){.about-grid{grid-template-columns:1fr}.about-grid .window:nth-child(n){margin-top:0;transform:none}.clinks{grid-template-columns:1fr}.locked{transform:none}.mega{padding-top:60px}}
-.tm.warn{border-color:var(--red);color:var(--red)}.tm.weird{border-color:#ff343d66;color:#e8e5dd;animation:glx .45s steps(2) 1}.tin button:disabled{opacity:.4;cursor:default}.tin input:disabled{opacity:.4}
+.tm.warn{border-color:var(--red);color:var(--red)}.tm.swear{border-color:var(--red);background:#ff343d1f;color:var(--red);font-weight:500;animation:glx .45s steps(2) 1}.tm.weird{border-color:#ff343d66;color:#e8e5dd;animation:glx .45s steps(2) 1}.tin button:disabled{opacity:.4;cursor:default}.tin input:disabled{opacity:.4}
 </style></head>
 <body>
 <div class="warning"><b>⚠ WARNING :</b><span>THIS WEBSITE DOES NOT HAVE RULES.</span><span class="right">NO. 001 — PERSONAL ARCHIVE</span></div>
@@ -79,8 +79,10 @@ const A={"what do you do?":"Minecraft texture packs, Discord servers, a secret Y
 const K=[["texture|pack|resource","can you make textures?"],["discord|server","discord servers?"],["hire|fiverr|price|contact|order","hire you?"],["secret|new channel","secret channel?"],["roblox|anim|blender|3d|luau|develop","roblox animation?"],["\\bmods?\\b","mods?"],["tool|software","tools?"],["achiev|sub|follower|download|youtube|twitch","achievements?"],["language|speak|english|urdu|japan","languages?"],["goal|future","future goals?"],["\\b(who|about|travel|hobby|interest)\\b","about you?"],["\\b(do|work|skill|job)\\b","what do you do?"]];
 const tc=document.getElementById('tchat'),ti=document.getElementById('tinp');
 function tadd(t,c){const d=document.createElement('div');d.className='tm '+c;d.innerHTML=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(https?:\/\/\S+)/g,'<a href="$1" target="_blank" rel="noreferrer">$1</a>');tc.appendChild(d);tc.scrollTop=tc.scrollHeight}
-const cnt={},busyRef={on:false};let bag=[];
+const cnt={},busyRef={on:false};let bag=[],sbag=[],wc=0;
 const WEIRD=["i can see you typing. you type like someone who is about to ask another question.","the secret channel isn't secret. you are just not invited. or ever. hard to tell. the walls disagree.","i asked the fridge about it. the fridge said nothing. the fridge always says nothing. suspicious.","ERROR: question rejected. replaced with a smaller, quieter question. you didn't ask it.","there are 14 tabs open in my head and one of them is you.","sorry, i was busy counting the pixels on your screen. 2,073,600. one of them is looking back.","answer: banana. reason: classified.","my last brain cell is on a break. leave a message after the beep. beep.","i'm not a bot. a bot would have a better answer. i have only vibes and unsaved files.","the answer is inside a folder called 'new folder (47)'. nobody opens it. nobody should.","stop. you're making the cursor nervous.","if you ask again i will answer in a language that doesn't exist yet.","yes. no. maybe. error. blue. why.","i've been awake for 400 hours. it's a loading screen. it's always been a loading screen.","your question has been forwarded to a very tired goblin. expect a reply never."];
+const SWEAR=["F*CK YA","MOTHER F*CKER","SON OF A B*TCH","F*CK YOU AND YOUR QUESTIONS","STOP ASKING, MOTHER F*CKER","I SAID WARNING. I SAID IT NICELY. F*CK.","ASK ONE MORE. I DARE YOU, SON OF A B*TCH.","F*CK. F*CK. F*CK. ERROR."];
+function pickSwear(){if(!sbag.length)sbag=SWEAR.map((_,i)=>i).sort(()=>Math.random()-.5);return SWEAR[sbag.pop()]}
 function pickWeird(){if(!bag.length)bag=WEIRD.map((_,i)=>i).sort(()=>Math.random()-.5);return WEIRD[bag.pop()]}
 function warnToast(){const t=document.getElementById('toast');t.textContent='⚠ WARNING — don\'t ask random questions.';t.classList.add('on');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('on'),2000)}
 function setBusy(v){busyRef.on=v;ti.disabled=v;document.getElementById('tgo').disabled=v}
@@ -91,9 +93,9 @@ let msg,cls='bot',delay=300,warn=false,weird=false;
 if(rnd){if(n===1){warn=true;msg=key==='secret-push'?"> don't ask about the secret :)\n( WARNING )":"> don't ask random questions :)\n( WARNING )"}else weird=true}
 else{if(n===1)msg=A[key];else if(n===2){warn=true;msg="> you already asked that :)\n( WARNING )"}else weird=true}
 if(warn){cls='bot warn';warnToast()}
-if(weird){cls='bot weird';msg='> '+pickWeird();delay=700+Math.random()*900}
-const crash=weird&&!bag.length;
-setTimeout(()=>{tadd(msg,cls);if(crash){setBusy(true);setTimeout(()=>tadd('> ask.exe has stopped responding.','bot warn'),1300);setTimeout(()=>{tadd("> rebooted. we don't talk about what happened.",'bot');Object.keys(cnt).forEach(k=>delete cnt[k]);setBusy(false)},6500)}},delay)}
+if(weird){wc++;if(wc<=6){cls='bot weird';msg='> '+pickWeird()}else{cls='bot swear';msg='> '+pickSwear()}delay=700+Math.random()*900}
+const crash=weird&&wc>6&&!sbag.length;
+setTimeout(()=>{tadd(msg,cls);if(crash){setBusy(true);setTimeout(()=>tadd('> ask.exe has stopped responding.','bot warn'),1300);setTimeout(()=>{tadd("> rebooted. we don't talk about what happened.",'bot');Object.keys(cnt).forEach(k=>delete cnt[k]);wc=0;bag=[];sbag=[];setBusy(false)},6500)}},delay)}
 Object.keys(A).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>task(q);document.getElementById('tq').appendChild(b)});
 function tsend(){const v=ti.value.trim();if(v){task(v);ti.value=''}}
 document.getElementById('tgo').onclick=tsend;ti.onkeydown=e=>{if(e.key==='Enter')tsend()};
